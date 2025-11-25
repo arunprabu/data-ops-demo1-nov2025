@@ -289,3 +289,111 @@ If it finishes without errors, then your pipeline is officially complete.
 git add dvc.lock models/model.pkl
 git commit -m "Run pipeline and generate trained model"
 ```
+
+
+## 📌 Some DVC Commands
+
+1. **Check what DVC is tracking**
+
+  ```bash
+  dvc list .
+  ```
+
+  Shows files/data tracked by DVC in the project.
+
+2. **Show version history of a tracked file** 📦
+
+  For example: `model.pkl`
+
+  ```bash
+  dvc diff
+  ```
+
+  Compares current state vs last commit.
+
+  To compare between two Git commits:
+
+  ```bash
+  dvc diff HEAD~1 HEAD
+  ```
+
+  This tells you:
+
+  - What changed in data
+  - What changed in pipeline
+  - What got added/removed
+
+3. **Show tracked data across commits** 🧠
+
+  ```bash
+  git log --oneline
+  ```
+
+  Pick two commit hashes. Then run:
+
+  ```bash
+  dvc diff <commit1> <commit2>
+  ```
+
+  Example:
+
+  ```bash
+  dvc diff 9123abc 4f89d21
+  ```
+
+  This shows data/model differences even if files are not stored in Git.
+
+4. **Show a model from a past commit** 🔗
+
+  ```bash
+  git checkout <old-commit>
+  dvc checkout
+  ```
+
+  This restores the old `model.pkl` and old data from that commit. Pure reproducibility. That’s real MLOps.
+
+5. **Show pipeline visualisation** 📜
+
+  ```bash
+  dvc dag
+  ```
+
+  This prints the flow of your pipeline:
+
+  - `get_data` → `process_data` → `train_model`
+
+6. **Show cache location** 📂
+
+  ```bash
+  dvc cache dir
+  ```
+
+  All past versions of data/model live in the DVC cache.
+
+7. **Explicitly list tracked versions** 🚀
+
+  ```bash
+  dvc gc --all-branches --all-tags --dry
+  ```
+
+  Shows what versions are stored — but doesn’t delete yet.
+
+## 🧨 Final Punchline
+
+To reproduce **any** version:
+
+```bash
+git checkout <old-commit>
+dvc checkout
+dvc repro
+```
+
+You get the exact old dataset and model. That is the whole point of DVC. That is what real MLOps looks like.
+
+Do this now:
+
+```bash
+dvc dag
+```
+
+You can see the pipeline.
