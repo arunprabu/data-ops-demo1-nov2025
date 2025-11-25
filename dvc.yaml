@@ -5,3 +5,11 @@ stages:
     - src/download_data.py
     outs:
     - data/raw/iris.csv
+  process_data:
+    cmd: python src/process_data.py
+    deps:
+    - data/raw/iris.csv
+    - src/process_data.py
+    outs:
+    - data/processed/test.csv
+    - data/processed/train.csv
