@@ -18,5 +18,5 @@ stages:
     deps:
     - data/processed/train.csv
     - src/train_model.py
-    # outs:
-    # - models/model.pkl
+    outs:
+    - models/model.pkl

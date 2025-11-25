@@ -1,20 +1,19 @@
 import os
 import pandas as pd
+import pickle
 import mlflow
-import mlflow.sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-
 def main():
-    # Set MLflow experiment name
+    # MLflow experiment name
     mlflow.set_experiment("iris_classification")
 
     train_path = os.path.join("data", "processed", "train.csv")
     df = pd.read_csv(train_path)
 
-    X = df.iloc[:, :-1]  # features
-    y = df.iloc[:, -1]   # target
+    X = df.iloc[:, :-1]
+    y = df.iloc[:, -1]
 
     model = LogisticRegression(max_iter=200)
 
@@ -24,24 +23,24 @@ def main():
         mlflow.log_param("model_type", "LogisticRegression")
         mlflow.log_param("max_iter", 200)
 
-        # Train the model
         model.fit(X, y)
 
-        # Evaluate accuracy
+        # Accuracy
         preds = model.predict(X)
         acc = accuracy_score(y, preds)
         mlflow.log_metric("train_accuracy", acc)
 
-        # Log model to MLflow Model Registry
-        mlflow.sklearn.log_model(
-            model,
-            artifact_path="model",
-            registered_model_name="iris_model"
-        )
+        # Save model
+        os.makedirs("models", exist_ok=True)
+        model_path = os.path.join("models", "model.pkl")
 
-        print(f"Logged model to MLflow Registry: iris_model")
-        print(f"Training accuracy: {acc:.4f}")
+        with open(model_path, "wb") as f:
+            pickle.dump(model, f)
 
+        mlflow.log_artifact(model_path)  # log model
+
+        print(f"Model saved to {model_path}")
+        print(f"Logged to MLflow. Accuracy: {acc}")
 
 if __name__ == "__main__":
     main()
