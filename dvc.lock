@@ -12,3 +12,23 @@ stages:
       hash: md5
       md5: 4d301abed5efe50eccda350cde38e0eb
       size: 2777
+  process_data:
+    cmd: python src/process_data.py
+    deps:
+    - path: data/raw/iris.csv
+      hash: md5
+      md5: 4d301abed5efe50eccda350cde38e0eb
+      size: 2777
+    - path: src/process_data.py
+      hash: md5
+      md5: ad8800b70c53aba952d0c86a64fdae2d
+      size: 536
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 32ecd1b41ec3a322ebd7d1cea0ab14c9
+      size: 617
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 20a771675f974006d30c2926ff658bea
+      size: 2237
