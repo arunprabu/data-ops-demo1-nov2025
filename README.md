@@ -286,6 +286,6 @@ If it finishes without errors, then your pipeline is officially complete.
 ## 📝 Step 4: Commit Final Output
 
 ```bash
-git add dvc.lock models/model.pkl.dvc
+git add dvc.lock models/model.pkl
 git commit -m "Run pipeline and generate trained model"
 ```
