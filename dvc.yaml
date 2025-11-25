@@ -13,3 +13,10 @@ stages:
     outs:
     - data/processed/test.csv
     - data/processed/train.csv
+  train_model:
+    cmd: python src/train_model.py
+    deps:
+    - data/processed/train.csv
+    - src/train_model.py
+    outs:
+    - models/model.pkl
