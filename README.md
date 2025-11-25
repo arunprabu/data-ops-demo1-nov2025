@@ -138,3 +138,154 @@ dvc repro
 git add dvc.lock
 git commit -m "Generate dvc.lock"
 ```
+
+## 7️⃣ Data Processing Stage (train/test split)
+
+**src/process_data.py:**
+
+```python
+import os
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+def main():
+    raw_path = os.path.join("data", "raw", "iris.csv")
+    processed_dir = os.path.join("data", "processed")
+    os.makedirs(processed_dir, exist_ok=True)
+
+    df = pd.read_csv(raw_path)
+    train, test = train_test_split(df, test_size=0.2, random_state=42)
+
+    train.to_csv(os.path.join(processed_dir, "train.csv"), index=False)
+    test.to_csv(os.path.join(processed_dir, "test.csv"), index=False)
+
+if __name__ == "__main__":
+    main()
+```
+
+## 8️⃣ Add Stage — process_data
+
+```bash
+dvc stage add \
+  -n process_data \
+  -d src/process_data.py \
+  -d data/raw/iris.csv \
+  -o data/processed/train.csv \
+  -o data/processed/test.csv \
+  python src/process_data.py
+```
+
+**Commit:**
+
+```bash
+git add dvc.yaml
+git commit -m "Add process_data stage to pipeline"
+```
+
+## 9️⃣ Run FULL Pipeline
+
+```bash
+rm -rf data/processed
+dvc repro
+```
+
+**Then:**
+
+```bash
+git add dvc.lock
+git commit -m "Execute full pipeline"
+```
+
+## 🔍 Reproducing Everything from Scratch
+
+```bash
+git clone <repo-url>
+cd data-ops-demo1
+pip install -r requirements.txt
+dvc repro
+```
+
+
+This will regenerate ALL data from raw → processed.
+
+Time to add the model training stage. We’ll take `train.csv` → train a simple classifier → save `model.pkl`. No fluff. Straight to the point.
+
+## 📁 Step 1: Create training script
+
+Create `src/train_model.py`:
+
+```python
+import os
+import pandas as pd
+import pickle
+from sklearn.linear_model import LogisticRegression
+
+def main():
+  train_path = os.path.join("data", "processed", "train.csv")
+  df = pd.read_csv(train_path)
+
+  # X = all features except the last column (target)
+  X = df.iloc[:, :-1]
+  y = df.iloc[:, -1]
+
+  model = LogisticRegression(max_iter=200)
+  model.fit(X, y)
+
+  # Save model
+  os.makedirs("models", exist_ok=True)
+  model_path = os.path.join("models", "model.pkl")
+  with open(model_path, "wb") as f:
+    pickle.dump(model, f)
+
+  print(f"Model saved to {model_path}")
+
+if __name__ == "__main__":
+  main()
+```
+
+Add and commit:
+
+```bash
+git add src/train_model.py
+git commit -m "Add training script"
+```
+
+## ⚙️ Step 2: Create DVC Stage for training
+
+```bash
+dvc stage add \
+  -n train_model \
+  -d src/train_model.py \
+  -d data/processed/train.csv \
+  -o models/model.pkl \
+  python src/train_model.py
+```
+
+Then commit:
+
+```bash
+git add dvc.yaml
+git commit -m "Add train_model stage to pipeline"
+```
+
+## 🧪 Step 3: Run Full Pipeline
+
+```bash
+rm -rf data/processed models
+dvc repro
+```
+
+This will run:
+
+- `get_data`
+- `process_data`
+- `train_model`
+
+If it finishes without errors, then your pipeline is officially complete.
+
+## 📝 Step 4: Commit Final Output
+
+```bash
+git add dvc.lock models/model.pkl.dvc
+git commit -m "Run pipeline and generate trained model"
+```
