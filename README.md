@@ -47,7 +47,7 @@ data-ops-demo1/
 ## 1️⃣ Setup Virtual Environment
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 ```
 
