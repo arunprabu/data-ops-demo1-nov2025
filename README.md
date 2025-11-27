@@ -290,6 +290,51 @@ git add dvc.lock models/model.pkl
 git commit -m "Run pipeline and generate trained model"
 ```
 
+## Now it is time to evaluate Model
+
+## Evaluate model (test / validation)
+
+The evaluation step loads the trained model and the processed test split, computes evaluation metrics, and writes a textual metric report.
+
+- Script: `src/evaluate_model.py`
+  - Loads model from `models/model.pkl`
+  - Loads test data from `data/processed/test.csv`
+  - Computes `accuracy` and a `classification_report`
+  - Writes a human-readable file `reports/metrics.txt`
+  - Logs the metric and the `reports/metrics.txt` artifact to MLflow
+
+How to run the evaluator locally:
+
+```bash
+# (from project root)
+python3 src/evaluate_model.py
+
+# After running, check the textual report:
+cat reports/metrics.txt
+```
+
+Add a DVC stage for evaluation (if the stage isn't already in `dvc.yaml`):
+
+```bash
+dvc stage add \
+  -n evaluate_model \
+  -d src/evaluate_model.py \
+  -d data/processed/test.csv \
+  -d models/model.pkl \
+  -o reports/metrics.txt \
+  python src/evaluate_model.py
+
+git add dvc.yaml
+git commit -m "Add evaluate_model stage"
+```
+
+Notes:
+- The script logs to MLflow (experiment name `iris_classification`), so if you want a UI run `mlflow ui` or set `MLFLOW_TRACKING_URI` to your server.
+- The repository includes a basic test `tests/test_evaluate_model.py` which verifies `reports/metrics.txt` is produced. Install test deps and run `pytest -q` to execute it.
+
+
+
+
 
 ## 📌 Some DVC Commands
 

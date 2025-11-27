@@ -20,3 +20,19 @@ stages:
     - src/train_model.py
     outs:
     - models/model.pkl
+  evaluate_model:
+    cmd: python src/evaluate_model.py
+    deps:
+    - data/processed/test.csv
+    - models/model.pkl
+    - src/evaluate_model.py
+    outs:
+    - reports/metrics.txt
+  # deploy_model:
+  #   cmd: python src/deploy_model.py
+  #   deps:
+  #   - models/model.pkl
+  #   - src/deploy_model.py
+  #   outs:
+  #   - deployment/deployed_model.pkl
+  
