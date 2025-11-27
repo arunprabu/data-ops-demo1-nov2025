@@ -4,4 +4,5 @@ __pycache__/
 *.pyo
 .DS_Store
 mlruns/
+mlflow.db
 # DVC cache is handled separately
